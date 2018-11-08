@@ -1,0 +1,82 @@
+https://github.com/Microsoft/vscode-cpptools/issues/2014
+
+gcc -Wp,-v -E -xc -x c++ /dev/null
+
+https://www.reddit.com/r/vscode/comments/77h6z6/kernel_modules_in_cc/
+
+https://github.com/Microsoft/vscode-cpptools/issues/916
+
+https://github.com/Microsoft/vscode-cpptools/issues/1484
+
+https://stackoverflow.com/questions/47866088/include-linux-kernel-headers-for-intellisense-in-vs-code
+
+-----------------------------------
+-- Why error "Expected a ';'"
+-----------------------------------
+
+- the kernel source code use some GNU C extensions like __attribute__, which are not supported by the intellisense extension.
+
+https://www.reddit.com/r/vscode/comments/8h1m6a/intellisense_for_linux_kernel_module_developing/
+
+https://stackoverflow.com/questions/51055123/linux-kernel-intellisense-issues-on-visual-studio-code
+
+-----------------------------------
+-- Testing cquery - http://maskray.me/blog/2017-12-03-c++-language-server-cquery
+-----------------------------------
+
+Requires space!
+
+Git clone https://github.com/jacobdufault/cquery
+    Build the language server executable (Arch Linux can be used in aur/cquery-git /usr/bin/cquery)
+        ./waf configure # or select the release version on http://releases.llvm.org/ with –bundled-clang=5.0.1
+        ./waf build #Build build/release/bin/cquery
+    The editor installs the language client plugin (Emacs lsp-mode, Neovim LanguageClient-neovim, VSCode installs the plugin in cquery/vscode-client)
+    Generate compile_commands.json for your C/C++/Objective-C project, see below.
+
+Cquery is a C++ language server. It works in the same way as the LSP client on the editor side:
+
+When the editor opens the C++ file, the language client plugin starts the language server process (according to the configured language server executable file), and uses stroma communication with the JSON-RPC 2.0 protocol. See https://microsoft.github.io/language for the protocol specification. -server-protocol/specification.
+
+The Language client plugin uses the initialize request to tell the language server (here the build/release/bin/cquery process) the functions it supports (ClientCapabilities), the project path (rootUri), and the initialization options (initializationOptions, cquery needs to know the cacheDirectory path). After that, various language related functions are realized by communicating with the language server:
+
+    When the cursor moves, it sends a textDocument/hover request to the language server, and the language server returns variable/function declaration information, comments, and so on. VSCode uses floating window display, Emacs lsp-mode shows with eldoc
+    The lookup definition sends a textDocument/definition request, and the language server returns the file and row number of the definition. Possible behavior of the editor: a single result directly jumps to the specified row of the target file, if there are multiple candidates, it is displayed in the menu
+    Find references to send textDocument/references requests, similar to lookup definitions
+    Find the symbol defined by the current document (usually and find the top of the outline) to send textDocument / documentSymbol request, language server returns symbol and rank number
+    Find the symbol of the project definition (it is also useful to find only the outline) Send the workspace/symbol request
+    Completing the textDocument/completion, the language server provides candidates and sorting methods, whether to use snippet, how to edit the document to get the completion result, etc.
+    The document editing operation sends textDocument/didChange, and the language server updates its model accordingly.
+    Cquery also supports extensions other than the Language Server Protocol, such as $cquery/derived for finding derived classes, methods, etc.
+
+
+Generate compile_commands.json
+
+One big difference between Clang LibTooling tools like cquery and traditional tag-based tools is understanding each source file and compilation method in the project. This information is provided by compile_commands.json placed in the project root.
+CMake
+
+% mkdir build
+% (cd build; cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=YES ..)
+% ln -s build/compile_commands.json
+
+Build EAR
+
+Bear is a tool that generates a compilation database for clang tooling. It can be used for any project based on Makefile.
+
+Bear make
+# generating compile_commands.json
+
+Ninja
+
+Ninja -t compdb rule_names... > compile_commands.json
+
+other
+
+Indexing Linux kernel
+
+Wget 'https://git.archlinux.org/svntogit/packages.git/plain/trunk/config?h=packages/linux' -O .config
+Yes '' | make config
+Bear make -j bzImage modules
+
+Generate 3GiB files.
+
+Index llvm, du -sh => 1.1GB, indexing memory takes up 2G.
