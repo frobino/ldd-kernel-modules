@@ -1,0 +1,31 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}",
+                    "/usr/src/linux-headers-4.18.0-2-common/include/",
+                    "/usr/src/linux-headers-4.18.0-2-common/arch/x86/include/",
+                    "/usr/src/linux-headers-4.18.0-2-amd64/include/",
+                    "/usr/src/linux-headers-4.18.0-2-amd64/arch/x86/include/generated/"
+                ], 
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            },
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/src/linux-headers-4.18.0-2-common/include/",
+                "/usr/src/linux-headers-4.18.0-2-common/arch/x86/include/",
+                "/usr/src/linux-headers-4.18.0-2-amd64/include/",
+                "/usr/src/linux-headers-4.18.0-2-amd64/arch/x86/include/generated/"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ], 
+    "version": 4
+}
