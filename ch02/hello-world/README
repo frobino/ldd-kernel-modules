@@ -73,10 +73,13 @@ other
 
 Indexing Linux kernel
 
-Wget 'https://git.archlinux.org/svntogit/packages.git/plain/trunk/config?h=packages/linux' -O .config
-Yes '' | make config
-Bear make -j bzImage modules
+git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+wget 'https://git.archlinux.org/svntogit/packages.git/plain/trunk/config?h=packages/linux' -O .config
+yes '' | make config
+bear make -j bzImage modules
 
 Generate 3GiB files.
 
 Index llvm, du -sh => 1.1GB, indexing memory takes up 2G.
+
+https://github.com/cquery-project/cquery/issues/232
